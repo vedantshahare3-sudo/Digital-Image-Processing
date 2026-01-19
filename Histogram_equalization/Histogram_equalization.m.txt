@@ -1,0 +1,40 @@
+%date - 19/01/2026
+%created by - Vedant Shahare
+clc;
+clear;
+close all;
+
+% Load image
+img = imread('input.jpg');
+imshow(img);
+title('Original Image');
+figure;
+
+% MATLAB built-in equalization
+Ieq = histeq(img);
+imshow(Ieq);
+title('Equalized Image (MATLAB histeq)');
+figure;
+
+% ---------- Manual Histogram Equalization (Simplified) ----------
+
+% Convert to gray if needed
+if size(img,3) == 3
+    img = rgb2gray(img);
+end
+
+% Flatten image to 1D
+pixels = img(:);
+
+% Histogram (counts of each intensity)
+[counts, grayLevels] = imhist(img);
+
+
+cdf_vals = cumsum(counts);
+
+cdf_min = min(cdf_vals(cdf_vals > 0));
+cdf_norm = round((cdf_vals - cdf_min) / (numel(pixels) - cdf_min) * 255);
+equalized_img = cdf_norm(double(img)+1);
+equalized_img = uint8(equalized_img);
+imshow(equalized_img);
+title('Equalized Image (Manual)');
